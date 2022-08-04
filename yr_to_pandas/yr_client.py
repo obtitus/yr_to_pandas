@@ -4,9 +4,6 @@ import json
 import locale
 import logging
 import os
-import pprint
-
-logger = logging.getLogger('yr.client')
 
 # data analysis libraries
 import pandas as pd
@@ -16,6 +13,8 @@ import requests
 # This library
 from pandas_helper import pandas_concat_helper
 
+logger = logging.getLogger('yr.client')
+
 # constants
 server = 'https://api.met.no/weatherapi/'
 cache_dir = os.path.dirname(__file__)
@@ -24,14 +23,15 @@ headers = {'user-agent': 'python-yr/ob@cakebox.net',
 
 
 def cached_yr_request(cache_filename, url, headers, params, **kwargs):
-    '''
+    """Calls the yr api, ensuring caching, 'Expires' and 'If-Modified-Since' headers are handled.
+
     Ensures Expires and If-Modified-Since yr headers are handled correctly to reduce load on server
     https://developer.yr.no/doc/GettingStarted/
      **kwargs are passed to requests.get
     Note: it is up to the application to ensure cache_filename is unique per unique request (i.e.
     different depending on url and location).
     From https://api.met.no/doc/TermsOfService: ensure you don't request a new location for every meter!
-    '''
+    """
     # ensure we are working on copy
     headers = dict(headers)
     params = dict(params)
@@ -79,7 +79,6 @@ def cached_yr_request(cache_filename, url, headers, params, **kwargs):
         except json.decoder.JSONDecodeError:
             logger.warning('Invalid cache')
 
-
     logger.debug('Get %s(%s, %s)', url, headers, kwargs)
     req = requests.get(url, headers=headers, params=params, **kwargs)
     req.raise_for_status()
@@ -92,7 +91,7 @@ def cached_yr_request(cache_filename, url, headers, params, **kwargs):
 
     res = json.loads(req.text)
     # keep these in cache for next time
-    res['Expires']       = req.headers['Expires']
+    res['Expires'] = req.headers['Expires']
     res['Last-Modified'] = req.headers['Last-Modified']
 
     with open(cache_filename, 'w') as f:
@@ -100,26 +99,25 @@ def cached_yr_request(cache_filename, url, headers, params, **kwargs):
 
     return res
 
+
 def convert_utc_to_local(time):
-    '''
-    Convert UTC timestamp to local time without tzinfo
-    '''
+    """Convert UTC timestamp to local time without tzinfo"""
     # Probably a easier solution to this
-    #print('before', time)
     time = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ")
     time = time.replace(tzinfo=pytz.UTC)
     time = time.astimezone()
     time = time.replace(tzinfo=None)
-    #print('after', time)
+
     return time
 
+
 def get_hourly_forecast_compact(lat, lon):
-    '''
-    Example usage of above function, get hourly forecast using locationforecast/2.0/compact with the given lat/lon
+    """Example usage of above function, get hourly forecast using locationforecast/2.0/compact with the given lat/lon
+
     returned as a pandas dataframe. Uses the scripts directory as the cache directory
     both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).
-    '''
-    cache_filename      = os.path.join(cache_dir, 'yr-locationforecast-%s-%s.json' % (lat, lon))
+    """
+    cache_filename = os.path.join(cache_dir, 'yr-locationforecast-%s-%s.json' % (lat, lon))
     historical_filename = os.path.join(cache_dir, 'yr-locationforecast-%s-%s.parquet' % (lat, lon))
 
     #
@@ -163,18 +161,19 @@ def get_hourly_forecast_compact(lat, lon):
 
     return df
 
+
 def get_nowcast(lat, lon):
-    '''
-    Example usage of above function, get hourly forecast using nowcast/2.0/compact with the given lat/lon
+    """Example usage of above function, get hourly forecast using nowcast/2.0/compact with the given lat/lon
+
     returned as a pandas dataframe. Uses the scripts directory as the cache directory
     both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).
 
     https://api.met.no/weatherapi/nowcast/2.0/documentation
-    '''
+    """
     cache_filename = os.path.join(cache_dir, 'yr-nowcast-%s-%s.json' % (lat, lon))
     historical_filename = os.path.join(cache_dir, 'yr-nowcast-%s-%s.parquet' % (lat, lon))
 
-    payload = {'lat':lat, 'lon':lon}
+    payload = {'lat': lat, 'lon': lon}
 
     res = cached_yr_request(cache_filename, server + 'nowcast/2.0/complete',
                             headers=headers, params=payload)
@@ -184,7 +183,7 @@ def get_nowcast(lat, lon):
     for item in res['properties']['timeseries']:
         time = convert_utc_to_local(item['time'])
 
-        details     = item['data']['instant']['details']
+        details = item['data']['instant']['details']
 
         row.update(details) # only the first result has all the items, keep the previous values when missing
         row['time'] = time
@@ -203,6 +202,7 @@ def get_nowcast(lat, lon):
     df.to_parquet(historical_filename)
 
     return df
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
