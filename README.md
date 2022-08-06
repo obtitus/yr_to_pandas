@@ -11,3 +11,5 @@ Tries to aid in conforming to https://api.met.no/doc/TermsOfService with:
 4. Don't schedule many requests at the same time: left to the caller.
 5. latitude/lontitude truncated to 4 decimals. :heavy_check_mark:
 6. Avoid continous poll: left to the caller.
+
+test
