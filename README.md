@@ -1,7 +1,7 @@
 # YR to Pandas
 
-Library to aid writing applications that interface with yr.no data api (https://api.met.no/weatherapi/)
-and the python library Pandas.
+Library to aid writing applications that downloads data from yr.no api (https://api.met.no/weatherapi/)
+into the python library Pandas
 
 Tries to aid in conforming to https://api.met.no/doc/TermsOfService with:
 
