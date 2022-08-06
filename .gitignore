@@ -21,6 +21,7 @@ env
 *.so
 dist/
 build/
+_build/
 
 # IDEs
 # PyCharm
