@@ -5,9 +5,9 @@ into the python library Pandas
 
 Tries to aid in conforming to https://api.met.no/doc/TermsOfService with:
 
-1. Results are cached to file and not re-submitted until `Expires` header allows. :white_check_mark:
-2. After the first call, subsequent calls have the `If-Modified-Since` header. :white_check_mark:
+1. Results are cached to file and not re-submitted until `Expires` header allows. :heavy_check_mark:
+2. After the first call, subsequent calls have the `If-Modified-Since` header. :heavy_check_mark:
 3. Don't generate unnecessary traffic: left to the caller.
 4. Don't schedule many requests at the same time: left to the caller.
-5. latitude/lontitude truncated to 4 decimals. :white_check_mark:
+5. latitude/lontitude truncated to 4 decimals. :heavy_check_mark:
 6. Avoid continous poll: left to the caller.
