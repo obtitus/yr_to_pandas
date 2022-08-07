@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to Yr to Pandas’s documentation! &mdash; Yr to Pandas  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="#" class="icon icon-home"> Yr to Pandas
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to Yr to Pandas’s documentation!</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">Yr to Pandas</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a> &raquo;</li>
+      <li>Welcome to Yr to Pandas’s documentation!</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-yr_to_pandas.yr_client">
+<span id="welcome-to-yr-to-pandas-s-documentation"></span><h1>Welcome to Yr to Pandas’s documentation!<a class="headerlink" href="#module-yr_to_pandas.yr_client" title="Permalink to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="yr_to_pandas.yr_client.cached_yr_request">
+<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_client.</span></span><span class="sig-name descname"><span class="pre">cached_yr_request</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">params</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_client.html#cached_yr_request"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_client.cached_yr_request" title="Permalink to this definition"></a></dt>
+<dd><p>Lowest level function, calls the yr api and returns a dictionary with the results.</p>
+<p>Ensures Expires and If-Modified-Since yr headers are handled correctly to reduce load on server
+<a class="reference external" href="https://developer.yr.no/doc/GettingStarted/">https://developer.yr.no/doc/GettingStarted/</a></p>
+<p>Note: it is up to the application to ensure cache_filename is unique per unique request (i.e.
+different depending on url and location).
+From <a class="reference external" href="https://api.met.no/doc/TermsOfService">https://api.met.no/doc/TermsOfService</a>: ensure you don’t request a new location for every meter!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cache_filename</strong> (<cite>str</cite>) – Uses the given filename to cache the data.</p></li>
+<li><p><strong>url</strong> (<cite>str</cite>) – Page url to visit</p></li>
+<li><p><strong>headers</strong> (<cite>dict</cite>) – header sent to requests.get, ensure this has a custom ‘user-agent’ and ‘Accept’: ‘application/json’</p></li>
+<li><p><strong>params</strong> (<cite>dict</cite>) – params sent to requests.get, will typically contain at least ‘lat’ and ‘lon’, depends on url.</p></li>
+<li><p><strong>**kwargs</strong> – are passed to requests.get</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Dictionary with results, depends on url, but will always contain ‘Expires’ and ‘Last-Modified’.
+The result is also stored in cache_filename as json and will be returned directly if this function is
+called before the data has expired.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="yr_to_pandas.yr_client.get_hourly_forecast_compact">
+<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_client.</span></span><span class="sig-name descname"><span class="pre">get_hourly_forecast_compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_client.html#get_hourly_forecast_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_client.get_hourly_forecast_compact" title="Permalink to this definition"></a></dt>
+<dd><p>Example for calling locationforecast/2.0/compact to get hourly forecast for a given lat/lon</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">get_hourly_forecast_compact</span><span class="p">(</span><span class="n">lat</span> <span class="o">=</span> <span class="mf">59.71949</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="mf">10.83576</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">Index([&#39;air_pressure_at_sea_level&#39;, &#39;air_temperature&#39;, &#39;cloud_area_fraction&#39;,</span>
+<span class="go">       &#39;relative_humidity&#39;, &#39;wind_from_direction&#39;, &#39;wind_speed&#39;, &#39;time&#39;,</span>
+<span class="go">       &#39;next_1_hours_precipitation_amount&#39;, &#39;next_1_hours_symbol_code&#39;,</span>
+<span class="go">       &#39;next_6_hours_precipitation_amount&#39;, &#39;next_6_hours_symbol_code&#39;,</span>
+<span class="go">       &#39;next_12_hours_symbol_code&#39;],</span>
+<span class="go">      dtype=&#39;object&#39;)</span>
+</pre></div>
+</div>
+<p>Uses the scripts directory as the cache directory
+both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lat</strong> (<em>int</em>) – latitude, will be rounded to 4 digits.</p></li>
+<li><p><strong>lon</strong> (<em>int</em>) – longitude, will be rounded to 4 digits.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns a dataframe</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="yr_to_pandas.yr_client.get_nowcast">
+<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_client.</span></span><span class="sig-name descname"><span class="pre">get_nowcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_client.html#get_nowcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_client.get_nowcast" title="Permalink to this definition"></a></dt>
+<dd><p>Example for calling nowcast/2.0/compact to get hourly forecast for a given lat/lon</p>
+<p>More information <a class="reference external" href="https://api.met.no/weatherapi/nowcast/2.0/documentation">https://api.met.no/weatherapi/nowcast/2.0/documentation</a></p>
+<p>Uses the scripts directory as the cache directory
+both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lat</strong> (<em>int</em>) – latitude, will be rounded to 4 digits.</p></li>
+<li><p><strong>lon</strong> (<em>int</em>) – longitude, will be rounded to 4 digits.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>returns a dataframe</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">get_nowcast</span><span class="p">(</span><span class="n">lat</span> <span class="o">=</span> <span class="mf">59.71949</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="mf">10.83576</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">Index([&#39;air_temperature&#39;, &#39;relative_humidity&#39;, &#39;wind_from_direction&#39;,</span>
+<span class="go">       &#39;wind_speed&#39;, &#39;wind_speed_of_gust&#39;, &#39;time&#39;, &#39;precipitation_rate&#39;],</span>
+<span class="go">      dtype=&#39;object&#39;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="yr_to_pandas.yr_client.parse_hourly_forecast_compact">
+<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_client.</span></span><span class="sig-name descname"><span class="pre">parse_hourly_forecast_compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_client.html#parse_hourly_forecast_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_client.parse_hourly_forecast_compact" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a dictionary from locationforecast/2.0/compact to a pandas DataFrame</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="yr_to_pandas.yr_client.parse_nowcast">
+<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_client.</span></span><span class="sig-name descname"><span class="pre">parse_nowcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_client.html#parse_nowcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_client.parse_nowcast" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a dictionary from nowcast/2.0/compact to a pandas DataFrame</p>
+<p>See <a class="reference internal" href="#yr_to_pandas.yr_client.get_nowcast" title="yr_to_pandas.yr_client.get_nowcast"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_nowcast(...)</span></code></a> for example usage</p>
+</dd></dl>
+
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, obtitus.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

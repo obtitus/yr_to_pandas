@@ -1,17 +1,10 @@
-install:
-	poetry install
+push_doc: copy_docs
+	git add -A .
+	git com -am "updated docs"
+	git push
 
-install_dev: install
-	poetry run pre-commit install
+copy_docs: create_doc
+	rsync -r ../yr_to_pandas/docs/_build/html/ .
 
-lint:
-	poetry run pre-commit run --all-files
-
-run:
-	poetry run python -m yr_to_pandas.yr_client
-
-doc:
-	(cd docs;make html)
-
-doc_auto:
-	poetry run when-changed -r yr_to_pandas "make doc"
+create_doc:
+	(cd ../yr_to_pandas/docs/;make html)
