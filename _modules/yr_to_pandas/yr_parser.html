@@ -70,10 +70,10 @@
 
 
 <div class="viewcode-block" id="parse_hourly_forecast_compact"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_parser.parse_hourly_forecast_compact">[docs]</a><span class="k">def</span> <span class="nf">parse_hourly_forecast_compact</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts a dictionary from locationforecast/2.0/compact to a flat pandas DataFrame</span>
+    <span class="sd">&quot;&quot;&quot;Converts a dictionary from locationforecast/2.0/compact to a flat pandas DataFrame.</span>
 
 <span class="sd">    See :func:`get_hourly_forecast_compact(...) &lt;yr_to_pandas.yr_examples.get_hourly_forecast_compact&gt;`</span>
-<span class="sd">    for example usage</span>
+<span class="sd">    for example usage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="s1">&#39;timeseries&#39;</span><span class="p">]:</span>
@@ -102,9 +102,9 @@
 
 
 <div class="viewcode-block" id="parse_nowcast"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_parser.parse_nowcast">[docs]</a><span class="k">def</span> <span class="nf">parse_nowcast</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Converts a dictionary from nowcast/2.0/compact to a flat pandas DataFrame</span>
+    <span class="sd">&quot;&quot;&quot;Converts a dictionary from nowcast/2.0/compact to a flat pandas DataFrame.</span>
 
-<span class="sd">    See :func:`get_nowcast(...) &lt;yr_to_pandas.yr_examples.get_nowcast&gt;` for example usage</span>
+<span class="sd">    See :func:`get_nowcast(...) &lt;yr_to_pandas.yr_examples.get_nowcast&gt;` for example usage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="n">row</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
