@@ -39,6 +39,8 @@
               <!-- Local TOC -->
               <div class="local-toc"><ul>
 <li><a class="reference internal" href="#">Welcome to Yr to Pandas’s documentation!</a></li>
+<li><a class="reference internal" href="#module-yr_to_pandas.yr_examples">Examples</a></li>
+<li><a class="reference internal" href="#module-yr_to_pandas.yr_parser">Parsers</a></li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 </div>
@@ -98,20 +100,13 @@ called before the data has expired.</p>
 </dl>
 </dd></dl>
 
+</section>
+<section id="module-yr_to_pandas.yr_examples">
+<span id="examples"></span><h1>Examples<a class="headerlink" href="#module-yr_to_pandas.yr_examples" title="Permalink to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="yr_to_pandas.yr_client.get_hourly_forecast_compact">
-<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_client.</span></span><span class="sig-name descname"><span class="pre">get_hourly_forecast_compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_client.html#get_hourly_forecast_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_client.get_hourly_forecast_compact" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="yr_to_pandas.yr_examples.get_hourly_forecast_compact">
+<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_examples.</span></span><span class="sig-name descname"><span class="pre">get_hourly_forecast_compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_examples.html#get_hourly_forecast_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_examples.get_hourly_forecast_compact" title="Permalink to this definition"></a></dt>
 <dd><p>Example for calling locationforecast/2.0/compact to get hourly forecast for a given lat/lon</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">get_hourly_forecast_compact</span><span class="p">(</span><span class="n">lat</span> <span class="o">=</span> <span class="mf">59.71949</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="mf">10.83576</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-<span class="go">Index([&#39;air_pressure_at_sea_level&#39;, &#39;air_temperature&#39;, &#39;cloud_area_fraction&#39;,</span>
-<span class="go">       &#39;relative_humidity&#39;, &#39;wind_from_direction&#39;, &#39;wind_speed&#39;, &#39;time&#39;,</span>
-<span class="go">       &#39;next_1_hours_precipitation_amount&#39;, &#39;next_1_hours_symbol_code&#39;,</span>
-<span class="go">       &#39;next_6_hours_precipitation_amount&#39;, &#39;next_6_hours_symbol_code&#39;,</span>
-<span class="go">       &#39;next_12_hours_symbol_code&#39;],</span>
-<span class="go">      dtype=&#39;object&#39;)</span>
-</pre></div>
-</div>
 <p>Uses the scripts directory as the cache directory
 both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).</p>
 <dl class="field-list simple">
@@ -128,11 +123,22 @@ both to cache the previous request (in a .json file) and to keep history of prev
 <dd class="field-odd"><p>pandas.DataFrame</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">get_hourly_forecast_compact</span><span class="p">(</span><span class="n">lat</span> <span class="o">=</span> <span class="mf">59.71949</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="mf">10.83576</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+<span class="go">Index([&#39;air_pressure_at_sea_level&#39;, &#39;air_temperature&#39;, &#39;cloud_area_fraction&#39;,</span>
+<span class="go">       &#39;relative_humidity&#39;, &#39;wind_from_direction&#39;, &#39;wind_speed&#39;, &#39;time&#39;,</span>
+<span class="go">       &#39;next_1_hours_precipitation_amount&#39;, &#39;next_1_hours_symbol_code&#39;,</span>
+<span class="go">       &#39;next_6_hours_precipitation_amount&#39;, &#39;next_6_hours_symbol_code&#39;,</span>
+<span class="go">       &#39;next_12_hours_symbol_code&#39;],</span>
+<span class="go">      dtype=&#39;object&#39;)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="yr_to_pandas.yr_client.get_nowcast">
-<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_client.</span></span><span class="sig-name descname"><span class="pre">get_nowcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_client.html#get_nowcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_client.get_nowcast" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="yr_to_pandas.yr_examples.get_nowcast">
+<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_examples.</span></span><span class="sig-name descname"><span class="pre">get_nowcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_examples.html#get_nowcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_examples.get_nowcast" title="Permalink to this definition"></a></dt>
 <dd><p>Example for calling nowcast/2.0/compact to get hourly forecast for a given lat/lon</p>
 <p>More information <a class="reference external" href="https://api.met.no/weatherapi/nowcast/2.0/documentation">https://api.met.no/weatherapi/nowcast/2.0/documentation</a></p>
 <p>Uses the scripts directory as the cache directory
@@ -161,17 +167,22 @@ both to cache the previous request (in a .json file) and to keep history of prev
 </div>
 </dd></dl>
 
+</section>
+<section id="module-yr_to_pandas.yr_parser">
+<span id="parsers"></span><h1>Parsers<a class="headerlink" href="#module-yr_to_pandas.yr_parser" title="Permalink to this heading"></a></h1>
 <dl class="py function">
-<dt class="sig sig-object py" id="yr_to_pandas.yr_client.parse_hourly_forecast_compact">
-<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_client.</span></span><span class="sig-name descname"><span class="pre">parse_hourly_forecast_compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_client.html#parse_hourly_forecast_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_client.parse_hourly_forecast_compact" title="Permalink to this definition"></a></dt>
-<dd><p>Converts a dictionary from locationforecast/2.0/compact to a pandas DataFrame</p>
+<dt class="sig sig-object py" id="yr_to_pandas.yr_parser.parse_hourly_forecast_compact">
+<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_parser.</span></span><span class="sig-name descname"><span class="pre">parse_hourly_forecast_compact</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_parser.html#parse_hourly_forecast_compact"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_parser.parse_hourly_forecast_compact" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a dictionary from locationforecast/2.0/compact to a flat pandas DataFrame</p>
+<p>See <a class="reference internal" href="#yr_to_pandas.yr_examples.get_hourly_forecast_compact" title="yr_to_pandas.yr_examples.get_hourly_forecast_compact"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_hourly_forecast_compact(...)</span></code></a>
+for example usage</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="yr_to_pandas.yr_client.parse_nowcast">
-<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_client.</span></span><span class="sig-name descname"><span class="pre">parse_nowcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_client.html#parse_nowcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_client.parse_nowcast" title="Permalink to this definition"></a></dt>
-<dd><p>Converts a dictionary from nowcast/2.0/compact to a pandas DataFrame</p>
-<p>See <a class="reference internal" href="#yr_to_pandas.yr_client.get_nowcast" title="yr_to_pandas.yr_client.get_nowcast"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_nowcast(...)</span></code></a> for example usage</p>
+<dt class="sig sig-object py" id="yr_to_pandas.yr_parser.parse_nowcast">
+<span class="sig-prename descclassname"><span class="pre">yr_to_pandas.yr_parser.</span></span><span class="sig-name descname"><span class="pre">parse_nowcast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/yr_to_pandas/yr_parser.html#parse_nowcast"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#yr_to_pandas.yr_parser.parse_nowcast" title="Permalink to this definition"></a></dt>
+<dd><p>Converts a dictionary from nowcast/2.0/compact to a flat pandas DataFrame</p>
+<p>See <a class="reference internal" href="#yr_to_pandas.yr_examples.get_nowcast" title="yr_to_pandas.yr_examples.get_nowcast"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_nowcast(...)</span></code></a> for example usage</p>
 </dd></dl>
 
 <div class="toctree-wrapper compound">

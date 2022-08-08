@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>yr_to_pandas.yr_examples &mdash; Yr to Pandas  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> Yr to Pandas
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Yr to Pandas</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>yr_to_pandas.yr_examples</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for yr_to_pandas.yr_examples</h1><div class="highlight"><pre>
+<span></span><span class="c1"># Standard library imports</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="c1"># data analysis libraries</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="c1"># This library</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">pandas_helper</span><span class="p">,</span> <span class="n">yr_client</span><span class="p">,</span> <span class="n">yr_parser</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;yr.client&#39;</span><span class="p">)</span>
+
+<span class="c1"># constants</span>
+<span class="n">cache_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span>
+<span class="n">server</span> <span class="o">=</span> <span class="s1">&#39;https://api.met.no/weatherapi/&#39;</span>
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;user-agent&#39;</span><span class="p">:</span> <span class="s1">&#39;python-yr/ob@cakebox.net&#39;</span><span class="p">}</span>
+
+
+<div class="viewcode-block" id="get_hourly_forecast_compact"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_examples.get_hourly_forecast_compact">[docs]</a><span class="k">def</span> <span class="nf">get_hourly_forecast_compact</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Example for calling locationforecast/2.0/compact to get hourly forecast for a given lat/lon</span>
+
+<span class="sd">    Uses the scripts directory as the cache directory</span>
+<span class="sd">    both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lat : int</span>
+<span class="sd">        latitude, will be rounded to 4 digits.</span>
+<span class="sd">    lon : int</span>
+<span class="sd">        longitude, will be rounded to 4 digits.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.DataFrame</span>
+<span class="sd">        returns a dataframe</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; df = get_hourly_forecast_compact(lat = 59.71949, lon = 10.83576)</span>
+<span class="sd">    &gt;&gt;&gt; df.keys()</span>
+<span class="sd">    Index([&#39;air_pressure_at_sea_level&#39;, &#39;air_temperature&#39;, &#39;cloud_area_fraction&#39;,</span>
+<span class="sd">           &#39;relative_humidity&#39;, &#39;wind_from_direction&#39;, &#39;wind_speed&#39;, &#39;time&#39;,</span>
+<span class="sd">           &#39;next_1_hours_precipitation_amount&#39;, &#39;next_1_hours_symbol_code&#39;,</span>
+<span class="sd">           &#39;next_6_hours_precipitation_amount&#39;, &#39;next_6_hours_symbol_code&#39;,</span>
+<span class="sd">           &#39;next_12_hours_symbol_code&#39;],</span>
+<span class="sd">          dtype=&#39;object&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cache_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;yr-locationforecast-</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">.json&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">))</span>
+    <span class="n">historical_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;yr-locationforecast-</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">.parquet&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">))</span>
+
+    <span class="c1">#</span>
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="n">lat</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="n">lon</span><span class="p">}</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">yr_client</span><span class="o">.</span><span class="n">cached_yr_request</span><span class="p">(</span><span class="n">cache_filename</span><span class="p">,</span> <span class="n">server</span> <span class="o">+</span> <span class="s1">&#39;locationforecast/2.0/compact&#39;</span><span class="p">,</span>
+                                      <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">yr_parser</span><span class="o">.</span><span class="n">parse_hourly_forecast_compact</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+    <span class="c1"># Keep history</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pandas_helper</span><span class="o">.</span><span class="n">keep_history</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<div class="viewcode-block" id="get_nowcast"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_examples.get_nowcast">[docs]</a><span class="k">def</span> <span class="nf">get_nowcast</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Example for calling nowcast/2.0/compact to get hourly forecast for a given lat/lon</span>
+
+<span class="sd">    More information https://api.met.no/weatherapi/nowcast/2.0/documentation</span>
+
+<span class="sd">    Uses the scripts directory as the cache directory</span>
+<span class="sd">    both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    lat : int</span>
+<span class="sd">        latitude, will be rounded to 4 digits.</span>
+<span class="sd">    lon : int</span>
+<span class="sd">        longitude, will be rounded to 4 digits.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.DataFrame</span>
+<span class="sd">        returns a dataframe</span>
+
+<span class="sd">    Examples</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; df = get_nowcast(lat = 59.71949, lon = 10.83576)</span>
+<span class="sd">    &gt;&gt;&gt; df.keys()</span>
+<span class="sd">    Index([&#39;air_temperature&#39;, &#39;relative_humidity&#39;, &#39;wind_from_direction&#39;,</span>
+<span class="sd">           &#39;wind_speed&#39;, &#39;wind_speed_of_gust&#39;, &#39;time&#39;, &#39;precipitation_rate&#39;],</span>
+<span class="sd">          dtype=&#39;object&#39;)</span>
+
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cache_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;yr-nowcast-</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">.json&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">))</span>
+    <span class="n">historical_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;yr-nowcast-</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">.parquet&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">))</span>
+
+    <span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="n">lat</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">:</span> <span class="n">lon</span><span class="p">}</span>
+
+    <span class="n">res</span> <span class="o">=</span> <span class="n">yr_client</span><span class="o">.</span><span class="n">cached_yr_request</span><span class="p">(</span><span class="n">cache_filename</span><span class="p">,</span> <span class="n">server</span> <span class="o">+</span> <span class="s1">&#39;nowcast/2.0/complete&#39;</span><span class="p">,</span>
+                                      <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">yr_parser</span><span class="o">.</span><span class="n">parse_nowcast</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+    <span class="n">df_storage</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Reading </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">historical_filename</span><span class="p">)</span>
+        <span class="n">df_storage</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_parquet</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">)</span>
+
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pandas_helper</span><span class="o">.</span><span class="n">pandas_concat</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">df_storage</span><span class="p">)</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Writing </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">historical_filename</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">to_parquet</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Hello world&#39;</span><span class="p">)</span>
+
+    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, obtitus.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
