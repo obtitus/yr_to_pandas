@@ -2,9 +2,6 @@
 import logging
 import os
 
-# data analysis libraries
-import pandas as pd
-
 # This library
 from . import pandas_helper, yr_client, yr_parser
 
@@ -48,9 +45,9 @@ def get_hourly_forecast_compact(lat, lon):
     cache_filename = os.path.join(cache_dir, 'yr-locationforecast-%s-%s.json' % (lat, lon))
     historical_filename = os.path.join(cache_dir, 'yr-locationforecast-%s-%s.parquet' % (lat, lon))
 
-    #
     payload = {'lat': lat, 'lon': lon}
 
+    # Get new data
     res = yr_client.cached_yr_request(cache_filename, server + 'locationforecast/2.0/compact',
                                       headers=headers, params=payload)
     df = yr_parser.parse_hourly_forecast_compact(res)
@@ -88,27 +85,19 @@ def get_nowcast(lat, lon):
     Index(['air_temperature', 'relative_humidity', 'wind_from_direction',
            'wind_speed', 'wind_speed_of_gust', 'time', 'precipitation_rate'],
           dtype='object')
-
-
     """
     cache_filename = os.path.join(cache_dir, 'yr-nowcast-%s-%s.json' % (lat, lon))
     historical_filename = os.path.join(cache_dir, 'yr-nowcast-%s-%s.parquet' % (lat, lon))
 
     payload = {'lat': lat, 'lon': lon}
 
+    # Get new data
     res = yr_client.cached_yr_request(cache_filename, server + 'nowcast/2.0/complete',
                                       headers=headers, params=payload)
     df = yr_parser.parse_nowcast(res)
 
-    df_storage = None
-    if os.path.exists(historical_filename):
-        logger.info('Reading %s', historical_filename)
-        df_storage = pd.read_parquet(historical_filename)
-
-    df = pandas_helper.pandas_concat(df, df_storage)
-
-    logger.info('Writing %s', historical_filename)
-    df.to_parquet(historical_filename)
+    # Keep history
+    df = pandas_helper.keep_history(historical_filename, df)
 
     return df
 

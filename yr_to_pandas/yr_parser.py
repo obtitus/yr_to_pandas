@@ -6,10 +6,10 @@ from .datetime_helper import convert_utc_to_local
 
 
 def parse_hourly_forecast_compact(res):
-    """Converts a dictionary from locationforecast/2.0/compact to a flat pandas DataFrame
+    """Converts a dictionary from locationforecast/2.0/compact to a flat pandas DataFrame.
 
     See :func:`get_hourly_forecast_compact(...) <yr_to_pandas.yr_examples.get_hourly_forecast_compact>`
-    for example usage
+    for example usage.
     """
     data = list()
     for item in res['properties']['timeseries']:
@@ -38,9 +38,9 @@ def parse_hourly_forecast_compact(res):
 
 
 def parse_nowcast(res):
-    """Converts a dictionary from nowcast/2.0/compact to a flat pandas DataFrame
+    """Converts a dictionary from nowcast/2.0/compact to a flat pandas DataFrame.
 
-    See :func:`get_nowcast(...) <yr_to_pandas.yr_examples.get_nowcast>` for example usage
+    See :func:`get_nowcast(...) <yr_to_pandas.yr_examples.get_nowcast>` for example usage.
     """
     data = list()
     row = dict()
