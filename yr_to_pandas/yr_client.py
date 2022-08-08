@@ -5,23 +5,11 @@ import locale
 import logging
 import os
 
-# data analysis libraries
-import pandas as pd
 import pytz
 # third party imports
 import requests
 
-from . import pandas_helper
-# This library
-from .datetime_helper import convert_utc_to_local
-
 logger = logging.getLogger('yr.client')
-
-# constants
-server = 'https://api.met.no/weatherapi/'
-cache_dir = os.path.dirname(__file__)
-headers = {'user-agent': 'python-yr/ob@cakebox.net',
-           'Accept': 'application/json'}
 
 
 def cached_yr_request(cache_filename, url, headers, params, **kwargs):
@@ -57,6 +45,9 @@ def cached_yr_request(cache_filename, url, headers, params, **kwargs):
     # ensure we are working on copy
     headers = dict(headers)
     params = dict(params)
+
+    # set default Accept header
+    headers['Accept'] = headers.get('Accept', 'application/json')
 
     # Look for lat/lon/altitude to ensure we truncate as requested by API
     for key in params:
@@ -123,150 +114,6 @@ def cached_yr_request(cache_filename, url, headers, params, **kwargs):
         json.dump(res, f)
 
     return res
-
-
-def parse_hourly_forecast_compact(res):
-    """Converts a dictionary from locationforecast/2.0/compact to a pandas DataFrame"""
-    data = list()
-    for item in res['properties']['timeseries']:
-        time = convert_utc_to_local(item['time'])
-        details = item['data']['instant']['details']
-
-        row = dict(details)
-        row['time'] = time
-
-        for next_x_hours in ('next_1_hours', 'next_6_hours', 'next_12_hours'):
-            if next_x_hours in item['data']:
-                n = item['data'][next_x_hours]
-                if 'details' in n:
-                    precipitation_amount = n['details']['precipitation_amount']
-                    row[next_x_hours + '_precipitation_amount'] = precipitation_amount
-
-                symbol_code = n['summary']['symbol_code']
-
-                row[next_x_hours + '_symbol_code'] = symbol_code
-
-        data.append(row)
-
-    df = pd.DataFrame(data)
-
-    return df
-
-
-def get_hourly_forecast_compact(lat, lon):
-    """Example for calling locationforecast/2.0/compact to get hourly forecast for a given lat/lon
-
-    >>> df = get_hourly_forecast_compact(lat = 59.71949, lon = 10.83576)
-    >>> df.keys()
-    Index(['air_pressure_at_sea_level', 'air_temperature', 'cloud_area_fraction',
-           'relative_humidity', 'wind_from_direction', 'wind_speed', 'time',
-           'next_1_hours_precipitation_amount', 'next_1_hours_symbol_code',
-           'next_6_hours_precipitation_amount', 'next_6_hours_symbol_code',
-           'next_12_hours_symbol_code'],
-          dtype='object')
-
-    Uses the scripts directory as the cache directory
-    both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).
-
-    Parameters
-    ----------
-    lat : int
-        latitude, will be rounded to 4 digits.
-    lon : int
-        longitude, will be rounded to 4 digits.
-
-    Returns
-    -------
-    pandas.DataFrame
-        returns a dataframe
-    """
-    cache_filename = os.path.join(cache_dir, 'yr-locationforecast-%s-%s.json' % (lat, lon))
-    historical_filename = os.path.join(cache_dir, 'yr-locationforecast-%s-%s.parquet' % (lat, lon))
-
-    #
-    payload = {'lat': lat, 'lon': lon}
-
-    res = cached_yr_request(cache_filename, server + 'locationforecast/2.0/compact',
-                            headers=headers, params=payload)
-    df = parse_hourly_forecast_compact(res)
-
-    # Keep history
-    df = pandas_helper.keep_history(historical_filename, df)
-
-    return df
-
-
-def parse_nowcast(res):
-    """Converts a dictionary from nowcast/2.0/compact to a pandas DataFrame
-
-    See :func:`get_nowcast(...) <yr_to_pandas.yr_client.get_nowcast>` for example usage
-    """
-    data = list()
-    row = dict()
-    for item in res['properties']['timeseries']:
-        time = convert_utc_to_local(item['time'])
-
-        details = item['data']['instant']['details']
-
-        row.update(details) # only the first result has all the items, keep the previous values when missing
-        row['time'] = time
-        data.append(dict(row))
-
-    df = pd.DataFrame(data)
-
-    return df
-
-
-def get_nowcast(lat, lon):
-    """Example for calling nowcast/2.0/compact to get hourly forecast for a given lat/lon
-
-    More information https://api.met.no/weatherapi/nowcast/2.0/documentation
-
-    Uses the scripts directory as the cache directory
-    both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).
-
-    Parameters
-    ----------
-    lat : int
-        latitude, will be rounded to 4 digits.
-    lon : int
-        longitude, will be rounded to 4 digits.
-
-    Returns
-    -------
-    pandas.DataFrame
-        returns a dataframe
-
-    Examples
-    --------
-    >>> df = get_nowcast(lat = 59.71949, lon = 10.83576)
-    >>> df.keys()
-    Index(['air_temperature', 'relative_humidity', 'wind_from_direction',
-           'wind_speed', 'wind_speed_of_gust', 'time', 'precipitation_rate'],
-          dtype='object')
-
-
-    """
-    cache_filename = os.path.join(cache_dir, 'yr-nowcast-%s-%s.json' % (lat, lon))
-    historical_filename = os.path.join(cache_dir, 'yr-nowcast-%s-%s.parquet' % (lat, lon))
-
-    payload = {'lat': lat, 'lon': lon}
-
-    res = cached_yr_request(cache_filename, server + 'nowcast/2.0/complete',
-                            headers=headers, params=payload)
-    df = parse_nowcast(res)
-
-    df_storage = None
-    if os.path.exists(historical_filename):
-        logger.info('Reading %s', historical_filename)
-        df_storage = pd.read_parquet(historical_filename)
-
-    df = pandas_helper.pandas_concat(df, df_storage)
-
-    logger.info('Writing %s', historical_filename)
-    df.to_parquet(historical_filename)
-
-    return df
 
 
 if __name__ == '__main__':

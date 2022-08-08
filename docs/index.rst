@@ -9,6 +9,17 @@ Welcome to Yr to Pandas's documentation!
 .. automodule:: yr_to_pandas.yr_client
 		:members:
 
+Examples
+========
+.. automodule:: yr_to_pandas.yr_examples
+		:members:
+
+Parsers
+========
+.. automodule:: yr_to_pandas.yr_parser
+		:members:
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
