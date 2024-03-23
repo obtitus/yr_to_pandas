@@ -12,7 +12,7 @@ import requests
 logger = logging.getLogger('yr.client')
 
 
-def cached_yr_request(cache_filename, url, headers, params, **kwargs):
+def cached_yr_request(cache_filename, url, headers, params=None, **kwargs):
     """Lowest level function, calls the yr api and returns a dictionary with the results.
 
     Ensures Expires and If-Modified-Since yr headers are handled correctly to reduce load on server
@@ -44,7 +44,10 @@ def cached_yr_request(cache_filename, url, headers, params, **kwargs):
     """
     # ensure we are working on copy
     headers = dict(headers)
-    params = dict(params)
+    if params is not None:
+        params = dict(params)
+    else:
+        params = dict()
 
     # set default Accept header
     headers['Accept'] = headers.get('Accept', 'application/json')
