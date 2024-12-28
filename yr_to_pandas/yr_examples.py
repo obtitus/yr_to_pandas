@@ -102,6 +102,80 @@ def get_nowcast(lat, lon):
     return df
 
 
+def get_airquality(lat, lon, areaclass='grunnkrets'):
+    """Example for calling airqualityforecast/0.1 to get hourly forecast for a given lat/lon
+
+    More information https://api.met.no/weatherapi/airqualityforecast/0.1/documentation
+
+    Uses the scripts directory as the cache directory
+    both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).
+
+    Parameters
+    ----------
+    lat : int
+        latitude, will be rounded to 4 digits.
+    lon : int
+        longitude, will be rounded to 4 digits.
+    arealclass=: str
+        Size of the area, one of grunnkrets, fylke, kommune or delomrade
+
+    Returns
+    -------
+    pandas.DataFrame
+        returns a dataframe
+
+    Examples
+    --------
+    >>> df = get_airquality(lat = 59.71949, lon = 10.83576)
+    >>> df.keys()
+    Index(['time', 'AQI', 'no2_concentration [ug/m3]', 'AQI_no2',
+           'no2_nonlocal_fraction [%]', 'no2_nonlocal_fraction_seasalt [%]',
+           'no2_local_fraction_traffic_exhaust [%]',
+           'no2_local_fraction_traffic_nonexhaust [%]',
+           'no2_local_fraction_shipping [%]', 'no2_local_fraction_heating [%]',
+           'no2_local_fraction_industry [%]', 'pm10_concentration [ug/m3]',
+           'AQI_pm10', 'pm10_nonlocal_fraction [%]',
+           'pm10_nonlocal_fraction_seasalt [%]',
+           'pm10_local_fraction_traffic_exhaust [%]',
+           'pm10_local_fraction_traffic_nonexhaust [%]',
+           'pm10_local_fraction_shipping [%]', 'pm10_local_fraction_heating [%]',
+           'pm10_local_fraction_industry [%]', 'pm25_concentration [ug/m3]',
+           'AQI_pm25', 'pm25_nonlocal_fraction [%]',
+           'pm25_nonlocal_fraction_seasalt [%]',
+           'pm25_local_fraction_traffic_exhaust [%]',
+           'pm25_local_fraction_traffic_nonexhaust [%]',
+           'pm25_local_fraction_shipping [%]', 'pm25_local_fraction_heating [%]',
+           'pm25_local_fraction_industry [%]', 'o3_concentration [ug/m3]',
+           'AQI_o3', 'o3_nonlocal_fraction [%]',
+           'o3_nonlocal_fraction_seasalt [%]',
+           'o3_local_fraction_traffic_exhaust [%]',
+           'o3_local_fraction_traffic_nonexhaust [%]',
+           'o3_local_fraction_shipping [%]', 'o3_local_fraction_heating [%]',
+           'o3_local_fraction_industry [%]'],
+          dtype='object')
+    """
+    cache_filename = os.path.join(cache_dir, 'yr-airquality-%s-%s.json' % (lat, lon))
+    historical_filename = os.path.join(cache_dir, 'yr-airquality-%s-%s.parquet' % (lat, lon))
+
+    payload = {'lat': lat, 'lon': lon, 'areaclass': areaclass}
+
+    # Get new data
+    res = yr_client.cached_yr_request(cache_filename, server + 'airqualityforecast/0.1',
+                                      headers=headers, params=payload)
+
+    # For description of each column:
+    # cache_filename = os.path.join(cache_dir, 'yr-airquality-desc-%s-%s.json' % (lat, lon))
+    # res = yr_client.cached_yr_request(cache_filename, server + 'airqualityforecast/0.1/aqi_description',
+    #                                   headers=headers)
+
+    df = yr_parser.parse_airquality(res)
+
+    # Keep history
+    df = pandas_helper.keep_history(historical_filename, df)
+
+    return df
+
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logger.debug('Hello world')

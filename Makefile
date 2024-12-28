@@ -5,8 +5,9 @@ install_dev: install
 	poetry run pre-commit install
 	(cd ..;git clone https://github.com/obtitus/yr_to_pandas.git yr_to_pandas_gh_pages;cd yr_to_pandas_gh_pages;git checkout gh_pages)
 
+# running lint with `poetry run pre-commit run --all-files` fails, no clue why
 lint:
-	poetry run pre-commit run --all-files
+	pre-commit run --all-files
 
 test:
 	poetry run python -m yr_to_pandas.yr_client

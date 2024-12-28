@@ -12,7 +12,7 @@ import requests
 logger = logging.getLogger('yr.client')
 
 
-def cached_yr_request(cache_filename, url, headers, params, **kwargs):
+def cached_yr_request(cache_filename, url, headers, params=None, **kwargs):
     """Lowest level function, calls the yr api and returns a dictionary with the results.
 
     Ensures Expires and If-Modified-Since yr headers are handled correctly to reduce load on server
@@ -41,10 +41,33 @@ def cached_yr_request(cache_filename, url, headers, params, **kwargs):
         Dictionary with results, depends on url, but will always contain 'Expires' and 'Last-Modified'.
         The result is also stored in cache_filename as json and will be returned directly if this function is
         called before the data has expired.
+
+    Example
+    --------
+    >>> lon = 10.83576
+    >>> lat = 59.71949
+    >>> cache_filename = 'tmp.json'
+    >>> server = 'https://api.met.no/weatherapi/'
+    >>> headers = {'user-agent': 'python-yr/ob@cakebox.net'}
+    >>> url = server + 'locationforecast/2.0/compact'
+    >>> payload = {'lat': lat, 'lon': lon}
+    >>> df = cached_yr_request(cache_filename, url, headers, params=payload)
+    >>> df.keys()
+    dict_keys(['type', 'geometry', 'properties', 'Expires', 'Last-Modified'])
+    >>> df['properties'].keys()
+    dict_keys(['meta', 'timeseries'])
+    >>> entry0 = df['properties']['timeseries'][0] # look at first entry
+    >>> entry0.keys()
+    dict_keys(['time', 'data'])
+    >>> entry0['data'].keys()
+    dict_keys(['instant', 'next_12_hours', 'next_1_hours', 'next_6_hours'])
     """
     # ensure we are working on copy
     headers = dict(headers)
-    params = dict(params)
+    if params is not None:
+        params = dict(params)
+    else:
+        params = dict()
 
     # set default Accept header
     headers['Accept'] = headers.get('Accept', 'application/json')
@@ -122,13 +145,3 @@ if __name__ == '__main__':
 
     import doctest
     doctest.testmod()
-
-    LON = 10.83576
-    LAT = 59.71949
-
-    # df = get_hourly_forecast_compact(lat=LAT, lon=LON)
-    # with pd.option_context('display.max_rows', 100, 'display.max_columns', None, 'display.width', 0):
-    #     print(df)
-
-    # df = get_nowcast(lat=LAT, lon=LON)
-    # print(df)

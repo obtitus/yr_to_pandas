@@ -13,3 +13,6 @@ Tries to aid in conforming to https://api.met.no/doc/TermsOfService with:
 6. Avoid continous poll: left to the caller.
 
 Python API Documentation: https://obtitus.github.io/yr_to_pandas
+
+## Development
+See `Makefile` for how to install, lint, test and generate documentation using Poetry (python-poetry.org)
