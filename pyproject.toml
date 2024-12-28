@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "Yr to Pandas"
+name = "yr_to_pandas"
 version = "0.1.0"
 description = "Library to aid writing applications that interface with yr.no data api (https://api.met.no/weatherapi/) and the python library Pandas."
 authors = ["obtitus"]
@@ -16,7 +16,7 @@ pyarrow = "^9.0.0"
 [tool.poetry.dev-dependencies]
 # Base tools
 flake8 = "~4.0.1"
-isort = "~5.10.1"
+isort = "~5.12.0"
 pre-commit = "~2.17.0"
 # Flake8 plugins, see https://github.com/python-discord/code-jam-template/tree/main#plugin-list
 flake8-docstrings = "~1.6.0"
