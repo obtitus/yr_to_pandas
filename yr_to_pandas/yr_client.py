@@ -55,7 +55,7 @@ def cached_yr_request(cache_filename, url, headers, params=None, **kwargs):
     >>> payload = {'lat': lat, 'lon': lon}
     >>> df = cached_yr_request(cache_filename, url, headers, params=payload)
     >>> df.keys()
-    dict_keys(['type', 'geometry', 'properties', 'Expires', 'Last-Modified'])
+    dict_keys(['type', 'geometry', 'properties', 'Expires', 'Last-Modified', 'Cached'])
     >>> df['properties'].keys()
     dict_keys(['meta', 'timeseries'])
     >>> entry0 = df['properties']['timeseries'][0] # look at first entry
