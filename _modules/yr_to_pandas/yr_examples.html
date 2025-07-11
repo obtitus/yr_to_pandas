@@ -67,12 +67,20 @@
            <div itemprop="articleBody">
              
   <h1>Source code for yr_to_pandas.yr_examples</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Standard library imports</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Provides basic examples to use the yr_to_pandas library.</span>
+
+<span class="sd">Intended use-case is to adapt yr_examples to your needs. Using as is will:</span>
+
+<span class="sd">* fetch data for the specified latitude and longitude.</span>
+<span class="sd">* save the data in a local .parquet cache.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="c1"># Standard library imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="c1"># This library</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">pandas_helper</span><span class="p">,</span> <span class="n">yr_client</span><span class="p">,</span> <span class="n">yr_parser</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">pandas_helper</span><span class="p">,</span> <span class="n">yr_client</span><span class="p">,</span> <span class="n">yr_parser</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;yr.client&#39;</span><span class="p">)</span>
 
@@ -82,8 +90,8 @@
 <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;user-agent&#39;</span><span class="p">:</span> <span class="s1">&#39;python-yr/ob@cakebox.net&#39;</span><span class="p">}</span>
 
 
-<div class="viewcode-block" id="get_hourly_forecast_compact"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_examples.get_hourly_forecast_compact">[docs]</a><span class="k">def</span> <span class="nf">get_hourly_forecast_compact</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example for calling locationforecast/2.0/compact to get hourly forecast for a given lat/lon</span>
+<div class="viewcode-block" id="get_hourly_forecast_compact"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_examples.get_hourly_forecast_compact">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_hourly_forecast_compact</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call locationforecast/2.0/compact to get hourly forecast for a given lat/lon.</span>
 
 <span class="sd">    Uses the scripts directory as the cache directory</span>
 <span class="sd">    both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).</span>
@@ -122,13 +130,16 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">yr_parser</span><span class="o">.</span><span class="n">parse_hourly_forecast_compact</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 
     <span class="c1"># Keep history</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pandas_helper</span><span class="o">.</span><span class="n">keep_history</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;Cached&#39;</span><span class="p">]:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pandas_helper</span><span class="o">.</span><span class="n">keep_history</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Skipping write to </span><span class="si">%s</span><span class="s1"> as value is already cached&#39;</span><span class="p">,</span> <span class="n">historical_filename</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="get_nowcast"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_examples.get_nowcast">[docs]</a><span class="k">def</span> <span class="nf">get_nowcast</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example for calling nowcast/2.0/compact to get hourly forecast for a given lat/lon</span>
+<div class="viewcode-block" id="get_nowcast"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_examples.get_nowcast">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_nowcast</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call nowcast/2.0/compact to get hourly forecast for a given lat/lon.</span>
 
 <span class="sd">    More information https://api.met.no/weatherapi/nowcast/2.0/documentation</span>
 
@@ -150,10 +161,8 @@
 <span class="sd">    Examples</span>
 <span class="sd">    --------</span>
 <span class="sd">    &gt;&gt;&gt; df = get_nowcast(lat = 59.71949, lon = 10.83576)</span>
-<span class="sd">    &gt;&gt;&gt; df.keys()</span>
-<span class="sd">    Index([&#39;air_temperature&#39;, &#39;relative_humidity&#39;, &#39;wind_from_direction&#39;,</span>
-<span class="sd">           &#39;wind_speed&#39;, &#39;wind_speed_of_gust&#39;, &#39;time&#39;, &#39;precipitation_rate&#39;],</span>
-<span class="sd">          dtype=&#39;object&#39;)</span>
+<span class="sd">    &gt;&gt;&gt; sorted(df.keys())</span>
+<span class="sd">    [&#39;air_temperature&#39;, &#39;precipitation_rate&#39;, &#39;relative_humidity&#39;, &#39;time&#39;, &#39;wind_from_direction&#39;, &#39;wind_speed&#39;, &#39;wind_speed_of_gust&#39;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">cache_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;yr-nowcast-</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">.json&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">))</span>
     <span class="n">historical_filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">,</span> <span class="s1">&#39;yr-nowcast-</span><span class="si">%s</span><span class="s1">-</span><span class="si">%s</span><span class="s1">.parquet&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">))</span>
@@ -166,13 +175,16 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">yr_parser</span><span class="o">.</span><span class="n">parse_nowcast</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 
     <span class="c1"># Keep history</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pandas_helper</span><span class="o">.</span><span class="n">keep_history</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;Cached&#39;</span><span class="p">]:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pandas_helper</span><span class="o">.</span><span class="n">keep_history</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Skipping write to </span><span class="si">%s</span><span class="s1"> as value is already cached&#39;</span><span class="p">,</span> <span class="n">historical_filename</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="get_airquality"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_examples.get_airquality">[docs]</a><span class="k">def</span> <span class="nf">get_airquality</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">areaclass</span><span class="o">=</span><span class="s1">&#39;grunnkrets&#39;</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Example for calling airqualityforecast/0.1 to get hourly forecast for a given lat/lon</span>
+<div class="viewcode-block" id="get_airquality"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_examples.get_airquality">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_airquality</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">,</span> <span class="n">areaclass</span><span class="o">=</span><span class="s1">&#39;grunnkrets&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Call airqualityforecast/0.1 to get hourly forecast for a given lat/lon.</span>
 
 <span class="sd">    More information https://api.met.no/weatherapi/airqualityforecast/0.1/documentation</span>
 
@@ -240,7 +252,10 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">yr_parser</span><span class="o">.</span><span class="n">parse_airquality</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 
     <span class="c1"># Keep history</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pandas_helper</span><span class="o">.</span><span class="n">keep_history</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;Cached&#39;</span><span class="p">]:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pandas_helper</span><span class="o">.</span><span class="n">keep_history</span><span class="p">(</span><span class="n">historical_filename</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Skipping write to </span><span class="si">%s</span><span class="s1"> as value is already cached&#39;</span><span class="p">,</span> <span class="n">historical_filename</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">df</span></div>
 
@@ -249,8 +264,8 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Hello world&#39;</span><span class="p">)</span>
 
-    <span class="kn">import</span> <span class="nn">doctest</span>
-    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
+    <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">(</span><span class="n">raise_on_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
            </div>

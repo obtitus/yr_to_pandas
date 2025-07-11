@@ -67,21 +67,23 @@
            <div itemprop="articleBody">
              
   <h1>Source code for yr_to_pandas.yr_client</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Standard library imports</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">locale</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;This module provides a low-level client for the YR weather API.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">pytz</span>
+<span class="c1"># Standard library imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">locale</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pytz</span>
 <span class="c1"># third party imports</span>
-<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;yr.client&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="cached_yr_request"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_client.cached_yr_request">[docs]</a><span class="k">def</span> <span class="nf">cached_yr_request</span><span class="p">(</span><span class="n">cache_filename</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="cached_yr_request"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_client.cached_yr_request">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">cached_yr_request</span><span class="p">(</span><span class="n">cache_filename</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Lowest level function, calls the yr api and returns a dictionary with the results.</span>
 
 <span class="sd">    Ensures Expires and If-Modified-Since yr headers are handled correctly to reduce load on server</span>
@@ -107,9 +109,29 @@
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
 <span class="sd">    dict</span>
-<span class="sd">        Dictionary with results, depends on url, but will always contain &#39;Expires&#39; and &#39;Last-Modified&#39;.</span>
+<span class="sd">        Dictionary with results, depends on url, but will always contain &#39;Expires&#39;, &#39;Last-Modified&#39; and &#39;Cached&#39;.</span>
 <span class="sd">        The result is also stored in cache_filename as json and will be returned directly if this function is</span>
 <span class="sd">        called before the data has expired.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    --------</span>
+<span class="sd">    &gt;&gt;&gt; lon = 10.83576</span>
+<span class="sd">    &gt;&gt;&gt; lat = 59.71949</span>
+<span class="sd">    &gt;&gt;&gt; cache_filename = &#39;tmp.json&#39;</span>
+<span class="sd">    &gt;&gt;&gt; server = &#39;https://api.met.no/weatherapi/&#39;</span>
+<span class="sd">    &gt;&gt;&gt; headers = {&#39;user-agent&#39;: &#39;python-yr/ob@cakebox.net&#39;}</span>
+<span class="sd">    &gt;&gt;&gt; url = server + &#39;locationforecast/2.0/compact&#39;</span>
+<span class="sd">    &gt;&gt;&gt; payload = {&#39;lat&#39;: lat, &#39;lon&#39;: lon}</span>
+<span class="sd">    &gt;&gt;&gt; df = cached_yr_request(cache_filename, url, headers, params=payload)</span>
+<span class="sd">    &gt;&gt;&gt; df.keys()</span>
+<span class="sd">    dict_keys([&#39;type&#39;, &#39;geometry&#39;, &#39;properties&#39;, &#39;Expires&#39;, &#39;Last-Modified&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; df[&#39;properties&#39;].keys()</span>
+<span class="sd">    dict_keys([&#39;meta&#39;, &#39;timeseries&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; entry0 = df[&#39;properties&#39;][&#39;timeseries&#39;][0] # look at first entry</span>
+<span class="sd">    &gt;&gt;&gt; entry0.keys()</span>
+<span class="sd">    dict_keys([&#39;time&#39;, &#39;data&#39;])</span>
+<span class="sd">    &gt;&gt;&gt; entry0[&#39;data&#39;].keys()</span>
+<span class="sd">    dict_keys([&#39;instant&#39;, &#39;next_12_hours&#39;, &#39;next_1_hours&#39;, &#39;next_6_hours&#39;])</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># ensure we are working on copy</span>
     <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
@@ -127,13 +149,13 @@
         <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">):</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:.4f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> <span class="c1"># probably not number</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># probably not number</span>
                 <span class="k">pass</span>
         <span class="c1"># Truncate to integer</span>
         <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="s1">&#39;altitude&#39;</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:.0f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span> <span class="c1"># probably not number</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>  <span class="c1"># probably not number</span>
                 <span class="k">pass</span>
 
     <span class="c1"># Look for previous call</span>
@@ -142,6 +164,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;reading cache </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">cache_filename</span><span class="p">)</span>
             <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">old</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+                <span class="n">old</span><span class="p">[</span><span class="s1">&#39;Cached&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>  <span class="c1"># true if returning cached value</span>
 
             <span class="n">tzinfo</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="s1">&#39;GMT&#39;</span><span class="p">)</span>
             <span class="c1"># not sure if this is needed/is a good idea,</span>
@@ -185,6 +208,7 @@
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">cache_filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
+    <span class="n">res</span><span class="p">[</span><span class="s1">&#39;Cached&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="k">return</span> <span class="n">res</span></div>
 
 
@@ -192,18 +216,8 @@
     <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Hello world&#39;</span><span class="p">)</span>
 
-    <span class="kn">import</span> <span class="nn">doctest</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">doctest</span>
     <span class="n">doctest</span><span class="o">.</span><span class="n">testmod</span><span class="p">()</span>
-
-    <span class="n">LON</span> <span class="o">=</span> <span class="mf">10.83576</span>
-    <span class="n">LAT</span> <span class="o">=</span> <span class="mf">59.71949</span>
-
-    <span class="c1"># df = get_hourly_forecast_compact(lat=LAT, lon=LON)</span>
-    <span class="c1"># with pd.option_context(&#39;display.max_rows&#39;, 100, &#39;display.max_columns&#39;, None, &#39;display.width&#39;, 0):</span>
-    <span class="c1">#     print(df)</span>
-
-    <span class="c1"># df = get_nowcast(lat=LAT, lon=LON)</span>
-    <span class="c1"># print(df)</span>
 </pre></div>
 
            </div>

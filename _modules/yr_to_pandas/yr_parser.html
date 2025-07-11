@@ -67,21 +67,22 @@
            <div itemprop="articleBody">
              
   <h1>Source code for yr_to_pandas.yr_parser</h1><div class="highlight"><pre>
-<span></span><span class="c1"># Standard library imports</span>
-<span class="kn">import</span> <span class="nn">datetime</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="sd">&quot;&quot;&quot;This module provides functions to parse YR weather API responses into pandas DataFrames.&quot;&quot;&quot;</span>
+<span class="c1"># Standard library imports</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">datetime</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 
 <span class="c1"># data analysis libraries</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 <span class="c1"># This library</span>
-<span class="kn">from</span> <span class="nn">.datetime_helper</span> <span class="kn">import</span> <span class="n">convert_utc_to_local</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.datetime_helper</span><span class="w"> </span><span class="kn">import</span> <span class="n">convert_utc_to_local</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s1">&#39;yr.parser&#39;</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="parse_hourly_forecast_compact"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_parser.parse_hourly_forecast_compact">[docs]</a><span class="k">def</span> <span class="nf">parse_hourly_forecast_compact</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a dictionary from locationforecast/2.0/compact to a flat pandas DataFrame.</span>
+<div class="viewcode-block" id="parse_hourly_forecast_compact"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_parser.parse_hourly_forecast_compact">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_hourly_forecast_compact</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a dictionary from locationforecast/2.0/compact to a flat pandas DataFrame.</span>
 
 <span class="sd">    See :func:`get_hourly_forecast_compact(...) &lt;yr_to_pandas.yr_examples.get_hourly_forecast_compact&gt;`</span>
 <span class="sd">    for example usage.</span>
@@ -98,7 +99,8 @@
             <span class="k">if</span> <span class="n">next_x_hours</span> <span class="ow">in</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">]:</span>
                 <span class="n">n</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="n">next_x_hours</span><span class="p">]</span>
                 <span class="k">if</span> <span class="s1">&#39;details&#39;</span> <span class="ow">in</span> <span class="n">n</span> <span class="ow">and</span> <span class="s1">&#39;precipitation_amount&#39;</span> <span class="ow">in</span> <span class="n">n</span><span class="p">[</span><span class="s1">&#39;details&#39;</span><span class="p">]:</span>
-                    <span class="n">precipitation_amount</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="s1">&#39;details&#39;</span><span class="p">][</span><span class="s1">&#39;precipitation_amount&#39;</span><span class="p">]</span>
+                    <span class="n">details</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="s1">&#39;details&#39;</span><span class="p">]</span>
+                    <span class="n">precipitation_amount</span> <span class="o">=</span> <span class="n">details</span><span class="p">[</span><span class="s1">&#39;precipitation_amount&#39;</span><span class="p">]</span>
                     <span class="n">row</span><span class="p">[</span><span class="n">next_x_hours</span> <span class="o">+</span> <span class="s1">&#39;_precipitation_amount&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">precipitation_amount</span>
 
                 <span class="n">symbol_code</span> <span class="o">=</span> <span class="n">n</span><span class="p">[</span><span class="s1">&#39;summary&#39;</span><span class="p">][</span><span class="s1">&#39;symbol_code&#39;</span><span class="p">]</span>
@@ -112,8 +114,8 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="parse_nowcast"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_parser.parse_nowcast">[docs]</a><span class="k">def</span> <span class="nf">parse_nowcast</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a dictionary from nowcast/2.0/compact to a flat pandas DataFrame.</span>
+<div class="viewcode-block" id="parse_nowcast"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_parser.parse_nowcast">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_nowcast</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a dictionary from nowcast/2.0/compact to a flat pandas DataFrame.</span>
 
 <span class="sd">    See :func:`get_nowcast(...) &lt;yr_to_pandas.yr_examples.get_nowcast&gt;` for example usage.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -124,7 +126,7 @@
 
         <span class="n">details</span> <span class="o">=</span> <span class="n">item</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;instant&#39;</span><span class="p">][</span><span class="s1">&#39;details&#39;</span><span class="p">]</span>
 
-        <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">details</span><span class="p">)</span> <span class="c1"># only the first result has all the items, keep the previous values when missing</span>
+        <span class="n">row</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">details</span><span class="p">)</span>  <span class="c1"># only the first result has all the items, keep the previous values when missing</span>
         <span class="n">row</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">time</span>
         <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">row</span><span class="p">))</span>
 
@@ -133,8 +135,8 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="parse_airquality"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_parser.parse_airquality">[docs]</a><span class="k">def</span> <span class="nf">parse_airquality</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Converts a dictionary from airqualityforecast/0.1 to a flat pandas DataFrame&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="parse_airquality"><a class="viewcode-back" href="../../index.html#yr_to_pandas.yr_parser.parse_airquality">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">parse_airquality</span><span class="p">(</span><span class="n">res</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Convert a dictionary from airqualityforecast/0.1 to a flat pandas DataFrame.&quot;&quot;&quot;</span>
     <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;data&#39;</span><span class="p">][</span><span class="s1">&#39;time&#39;</span><span class="p">]:</span>
         <span class="c1"># from pprint import pprint</span>
