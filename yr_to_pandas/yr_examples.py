@@ -53,7 +53,10 @@ def get_hourly_forecast_compact(lat, lon):
     df = yr_parser.parse_hourly_forecast_compact(res)
 
     # Keep history
-    df = pandas_helper.keep_history(historical_filename, df)
+    if not res['Cached']:
+        df = pandas_helper.keep_history(historical_filename, df)
+    else:
+        logger.debug('Skipping write to %s as value is already cached', historical_filename)
 
     return df
 
@@ -97,7 +100,10 @@ def get_nowcast(lat, lon):
     df = yr_parser.parse_nowcast(res)
 
     # Keep history
-    df = pandas_helper.keep_history(historical_filename, df)
+    if not res['Cached']:
+        df = pandas_helper.keep_history(historical_filename, df)
+    else:
+        logger.debug('Skipping write to %s as value is already cached', historical_filename)
 
     return df
 
@@ -171,7 +177,10 @@ def get_airquality(lat, lon, areaclass='grunnkrets'):
     df = yr_parser.parse_airquality(res)
 
     # Keep history
-    df = pandas_helper.keep_history(historical_filename, df)
+    if not res['Cached']:
+        df = pandas_helper.keep_history(historical_filename, df)
+    else:
+        logger.debug('Skipping write to %s as value is already cached', historical_filename)
 
     return df
 

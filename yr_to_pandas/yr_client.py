@@ -38,7 +38,7 @@ def cached_yr_request(cache_filename, url, headers, params=None, **kwargs):
     Returns
     -------
     dict
-        Dictionary with results, depends on url, but will always contain 'Expires' and 'Last-Modified'.
+        Dictionary with results, depends on url, but will always contain 'Expires', 'Last-Modified' and 'Cached'.
         The result is also stored in cache_filename as json and will be returned directly if this function is
         called before the data has expired.
 
@@ -93,6 +93,7 @@ def cached_yr_request(cache_filename, url, headers, params=None, **kwargs):
             logger.debug('reading cache %s', cache_filename)
             with open(cache_filename, 'r') as f:
                 old = json.load(f)
+                old['Cached'] = True # true if returning cached value
 
             tzinfo = pytz.timezone('GMT')
             # not sure if this is needed/is a good idea,
@@ -136,6 +137,7 @@ def cached_yr_request(cache_filename, url, headers, params=None, **kwargs):
     with open(cache_filename, 'w') as f:
         json.dump(res, f)
 
+    res['Cached'] = False
     return res
 
 

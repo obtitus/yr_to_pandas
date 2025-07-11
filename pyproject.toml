@@ -6,12 +6,12 @@ authors = ["obtitus"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "3.10.*"
+python = "^3.10"
 appdirs = "^1.4.4"
 pandas = "^1.4.3"
 requests = "^2.28.1"
 pytz = "^2022.1"
-pyarrow = "^9.0.0"
+pyarrow = "15.0.0"
 
 [tool.poetry.dev-dependencies]
 # Base tools
