@@ -2,8 +2,9 @@
 Provides basic examples to use the yr_to_pandas library.
 
 Intended use-case is to adapt yr_examples to your needs. Using as is will:
-* fetch data for the specified latitude and longitude
-* save the data in a local .parquet cache
+
+* fetch data for the specified latitude and longitude.
+* save the data in a local .parquet cache.
 """
 # Standard library imports
 import logging

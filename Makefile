@@ -12,6 +12,7 @@ lint:
 test:
 	poetry run python -m yr_to_pandas.yr_client
 	poetry run python -m yr_to_pandas.yr_examples
+	poetry run tox
 
 doc:
 	(cd docs;make html)

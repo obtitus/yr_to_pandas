@@ -1,3 +1,4 @@
+"""Misc pandas helper functions."""
 # Standard library imports
 import logging
 import os
@@ -9,7 +10,7 @@ logger = logging.getLogger('yr.pandas')
 
 
 def pandas_concat(df1, df2, subset='time'):
-    """Returns a concatenated dataframe, duplicate subset columns uses values from df2."""
+    """Return a concatenated dataframe, duplicate subset columns uses values from df2."""
     if df2 is not None:
         df1 = pd.concat([df2, df1], ignore_index=True)
         df1.drop_duplicates(subset='time', keep='last',
@@ -19,7 +20,7 @@ def pandas_concat(df1, df2, subset='time'):
 
 
 def keep_history(historical_filename, df):
-    """Loads (if it exits) and saves pandas.DataFrame df to historical_filename"""
+    """Load (if it exists) and save pandas.DataFrame df to historical_filename."""
     df_storage = None
     if os.path.exists(historical_filename):
         logger.info('Reading %s', historical_filename)

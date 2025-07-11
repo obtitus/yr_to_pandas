@@ -1,3 +1,4 @@
+"""This module provides functions to parse YR weather API responses into pandas DataFrames."""
 # Standard library imports
 import datetime
 import logging
@@ -12,7 +13,7 @@ logger = logging.getLogger('yr.parser')
 
 
 def parse_hourly_forecast_compact(res):
-    """Converts a dictionary from locationforecast/2.0/compact to a flat pandas DataFrame.
+    """Convert a dictionary from locationforecast/2.0/compact to a flat pandas DataFrame.
 
     See :func:`get_hourly_forecast_compact(...) <yr_to_pandas.yr_examples.get_hourly_forecast_compact>`
     for example usage.
@@ -45,7 +46,7 @@ def parse_hourly_forecast_compact(res):
 
 
 def parse_nowcast(res):
-    """Converts a dictionary from nowcast/2.0/compact to a flat pandas DataFrame.
+    """Convert a dictionary from nowcast/2.0/compact to a flat pandas DataFrame.
 
     See :func:`get_nowcast(...) <yr_to_pandas.yr_examples.get_nowcast>` for example usage.
     """
@@ -56,7 +57,7 @@ def parse_nowcast(res):
 
         details = item['data']['instant']['details']
 
-        row.update(details) # only the first result has all the items, keep the previous values when missing
+        row.update(details)  # only the first result has all the items, keep the previous values when missing
         row['time'] = time
         data.append(dict(row))
 
@@ -66,7 +67,7 @@ def parse_nowcast(res):
 
 
 def parse_airquality(res):
-    """Converts a dictionary from airqualityforecast/0.1 to a flat pandas DataFrame"""
+    """Convert a dictionary from airqualityforecast/0.1 to a flat pandas DataFrame."""
     data = list()
     for item in res['data']['time']:
         # from pprint import pprint

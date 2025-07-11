@@ -1,3 +1,5 @@
+"""This module provides a low-level client for the YR weather API."""
+
 # Standard library imports
 import datetime
 import json
@@ -78,13 +80,13 @@ def cached_yr_request(cache_filename, url, headers, params=None, **kwargs):
         if key in ('lat', 'lon'):
             try:
                 params[key] = '{:.4f}'.format(params[key])
-            except ValueError: # probably not number
+            except ValueError:  # probably not number
                 pass
         # Truncate to integer
         if key == 'altitude':
             try:
                 params[key] = '{:.0f}'.format(params[key])
-            except ValueError: # probably not number
+            except ValueError:  # probably not number
                 pass
 
     # Look for previous call
@@ -93,7 +95,7 @@ def cached_yr_request(cache_filename, url, headers, params=None, **kwargs):
             logger.debug('reading cache %s', cache_filename)
             with open(cache_filename, 'r') as f:
                 old = json.load(f)
-                old['Cached'] = True # true if returning cached value
+                old['Cached'] = True  # true if returning cached value
 
             tzinfo = pytz.timezone('GMT')
             # not sure if this is needed/is a good idea,
