@@ -12,6 +12,15 @@ lint:
 test:
 	poetry run python -m yr_to_pandas.yr_client
 	poetry run python -m yr_to_pandas.yr_examples
+
+# note: update the absolute python paths in tox.ini
+test_python_versions:
+	uv python install cpython-3.9.23-linux-x86_64-gnu \
+		cpython-3.10.18-linux-x86_64-gnu \
+		cpython-3.11.13-linux-x86_64-gnu \
+		cpython-3.12.11-linux-x86_64-gnu \
+		cpython-3.13.5-linux-x86_64-gnu
+
 	poetry run tox
 
 doc:
