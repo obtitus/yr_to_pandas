@@ -36,3 +36,5 @@ _build/
 # Data
 yr-*.json
 yr-*.parquet
+# Tox
+.tox/

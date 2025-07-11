@@ -1,3 +1,10 @@
+"""
+Provides basic examples to use the yr_to_pandas library.
+
+Intended use-case is to adapt yr_examples to your needs. Using as is will:
+* fetch data for the specified latitude and longitude
+* save the data in a local .parquet cache
+"""
 # Standard library imports
 import logging
 import os
@@ -14,7 +21,7 @@ headers = {'user-agent': 'python-yr/ob@cakebox.net'}
 
 
 def get_hourly_forecast_compact(lat, lon):
-    """Example for calling locationforecast/2.0/compact to get hourly forecast for a given lat/lon
+    """Call locationforecast/2.0/compact to get hourly forecast for a given lat/lon.
 
     Uses the scripts directory as the cache directory
     both to cache the previous request (in a .json file) and to keep history of previous results (in a .parquet file).
@@ -62,7 +69,7 @@ def get_hourly_forecast_compact(lat, lon):
 
 
 def get_nowcast(lat, lon):
-    """Example for calling nowcast/2.0/compact to get hourly forecast for a given lat/lon
+    """Call nowcast/2.0/compact to get hourly forecast for a given lat/lon.
 
     More information https://api.met.no/weatherapi/nowcast/2.0/documentation
 
@@ -84,10 +91,8 @@ def get_nowcast(lat, lon):
     Examples
     --------
     >>> df = get_nowcast(lat = 59.71949, lon = 10.83576)
-    >>> df.keys()
-    Index(['air_temperature', 'relative_humidity', 'wind_from_direction',
-           'wind_speed', 'wind_speed_of_gust', 'time', 'precipitation_rate'],
-          dtype='object')
+    >>> sorted(df.keys())
+    ['air_temperature', 'precipitation_rate', 'relative_humidity', 'time', 'wind_from_direction', 'wind_speed', 'wind_speed_of_gust']
     """
     cache_filename = os.path.join(cache_dir, 'yr-nowcast-%s-%s.json' % (lat, lon))
     historical_filename = os.path.join(cache_dir, 'yr-nowcast-%s-%s.parquet' % (lat, lon))
@@ -109,7 +114,7 @@ def get_nowcast(lat, lon):
 
 
 def get_airquality(lat, lon, areaclass='grunnkrets'):
-    """Example for calling airqualityforecast/0.1 to get hourly forecast for a given lat/lon
+    """Call airqualityforecast/0.1 to get hourly forecast for a given lat/lon.
 
     More information https://api.met.no/weatherapi/airqualityforecast/0.1/documentation
 
@@ -190,4 +195,4 @@ if __name__ == '__main__':
     logger.debug('Hello world')
 
     import doctest
-    doctest.testmod()
+    doctest.testmod(raise_on_error=True, verbose=True)

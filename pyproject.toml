@@ -6,7 +6,7 @@ authors = ["obtitus"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.10"
+python = "^3.9"
 appdirs = "^1.4.4"
 pandas = "^1.4.3"
 requests = "^2.28.1"
@@ -24,9 +24,13 @@ Sphinx = "^5.1.1"
 sphinx-rtd-theme = "^1.0.0"
 sphinxcontrib-napoleon = "^0.7"
 when-changed = {url = "https://github.com/joh/when-changed/archive/master.zip"}
+tox = "^4.27.0"
 
 [tool.poetry.extras]
 docs = ["Sphinx", "sphinx-rtd-theme", "sphinxcontrib-napoleon"]
+
+[tool.flake8]
+max-line-length = 120
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
